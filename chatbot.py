@@ -4,6 +4,7 @@ from baidu.AipImageClassify import calorie
 from telegram.ext import Updater,Dispatcher, MessageHandler, Filters,CommandHandler,CallbackContext
 import requests
 import json
+from telegram import (ReplyKeyboardMarkup, KeyboardButton)
 # 载入配置文件
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -20,20 +21,35 @@ def run():
     
     dispatcher = updater.dispatcher
     echo_handler = MessageHandler(Filters.photo, image_handler)
+    location_handler = MessageHandler(Filters.location, returnlocation)
     dispatcher.add_handler(CommandHandler('hello',hello))
     dispatcher.add_handler(echo_handler)
-
+    dispatcher.add_handler(location_handler)
+    dispatcher.add_handler(CommandHandler('location', location))
     # To start the bot:
     updater.start_polling()
     updater.idle()
 
-def hello(update, context):
-    reply_message = update.message.text.upper()
+def hello(bot, update):
+    reply_message = bot.message.text.upper()
+    #print(update)
     logging.info("Update: " + str(update))
-    logging.info("context: " + str(context))
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
-
-
+    #logging.info("context: " + str(context))
+    update.bot.send_message(chat_id=bot.effective_chat.id, text=reply_message)
+def returnlocation(bot,update):
+    replay_message = "打卡成功！"
+    update.bot.send_message(chat_id=bot.effective_chat.id, text=replay_message)
+ 
+    print("打卡成功！")
+def location(bot, update):
+    reply_markup = ReplyKeyboardMarkup(
+        [[KeyboardButton('共享位置',request_location=True)]],
+        resize_keyboard= True,
+        one_time_keyboard=True,
+    )
+    message = "请共享你的打卡位置"
+    update.bot.send_message(chat_id=bot.message.chat_id, text=message, reply_markup=reply_markup)
+    
 def image_handler(bot, update):
     file = bot.message.photo[-1].file_id
     #print(type(FileExistsError))
@@ -55,7 +71,7 @@ def image_handler(bot, update):
        
         update.bot.send_message(chat_id=bot.effective_chat.id, text="Can not recognize any food in the image")
     else:
-        replay_message="The calorie of this food is "+output['result'][0]['calorie'] +"KJ"   
+        replay_message="The calorie of this food is "+output['result'][0]['calorie'] +" kj"   
         update.bot.send_message(chat_id=bot.effective_chat.id, text=replay_message)
     #print(output['result'][0]['calorie'])
     
