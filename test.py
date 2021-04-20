@@ -1,7 +1,7 @@
 import configparser
 import logging
 from telegram import ReplyKeyboardMarkup
-from telegram.ext import Updater,Dispatcher, MessageHandler, Filters,CommandHandler,CallbackContext
+from telegram.ext import Updater, Dispatcher, MessageHandler, Filters, CommandHandler, CallbackContext
 
 # 载入配置文件
 config = configparser.ConfigParser()
@@ -23,7 +23,7 @@ def run():
     text_handler = MessageHandler(Filters.text & (~Filters.command), nlp)
     dispatcher.add_handler(text_handler)
 
-    # 处理图片卡路里计算 
+    # 处理图片卡路里计算
     cal_handler = MessageHandler(Filters.photo, image_handler)
     dispatcher.add_handler(cal_handler)
 
@@ -52,6 +52,7 @@ def nlp(update, context):
     print(type(msg_text))
     res_text = detect_intent_texts("comp7930-final-ipxa", '123456789', msg_text, 'zh-CN')
     context.bot.send_message(chat_id=update.effective_chat.id, text=res_text)
+
 
 def image_handler(bot, update):
     file = bot.message.photo[-1].file_id
@@ -83,6 +84,7 @@ def detect_intent_texts(project_id, session_id, text, language_code):
     print('Fulfillment text: {}\n'.format(
         response.query_result.fulfillment_text))
     return response.query_result.fulfillment_text
+
 
 if __name__ == '__main__':
     run()
