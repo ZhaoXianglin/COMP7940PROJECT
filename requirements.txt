@@ -1,4 +1,1 @@
-baidu-aip
-configparser==5.0.1
-telegram
-python-telegram-bot>=13.1
+telegram==0.0.1
