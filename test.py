@@ -1,7 +1,9 @@
 import configparser
 import logging
 from telegram import ReplyKeyboardMarkup
-from telegram.ext import Updater,Dispatcher, MessageHandler, Filters,CommandHandler,CallbackContext
+from telegram.ext import Updater, Dispatcher, MessageHandler, Filters, CommandHandler, CallbackContext
+from kkbox_developer_sdk.auth_flow import KKBOXOAuth
+from kkbox_developer_sdk.api import KKBOXAPI
 
 # 载入配置文件
 config = configparser.ConfigParser()
@@ -23,7 +25,7 @@ def run():
     text_handler = MessageHandler(Filters.text & (~Filters.command), nlp)
     dispatcher.add_handler(text_handler)
 
-    # 处理图片卡路里计算 
+    # 处理图片卡路里计算
     cal_handler = MessageHandler(Filters.photo, image_handler)
     dispatcher.add_handler(cal_handler)
 
@@ -49,24 +51,34 @@ def welcome(update, context):
 # 所有的文字信息转发dialogflow
 def nlp(update, context):
     msg_text = update.message.text
-    print(type(msg_text))
-    res_text = detect_intent_texts("comp7930-final-ipxa", '123456789', msg_text, 'zh-CN')
-    context.bot.send_message(chat_id=update.effective_chat.id, text=res_text)
+    intent, res_text = detect_intent_texts("comp7930-final-ipxa", '123456789', msg_text, 'zh-CN')
+    if intent == 'music':
+        print("在这")
+        auth = KKBOXOAuth(config['KKBOX']['ID'], config['KKBOX']['SECRET'])
+        token = auth.fetch_access_token_by_client_credentials()
+        kkboxapi = KKBOXAPI(token)
+        search_results = kkboxapi.search_fetcher.search('workout', types=['playlist'], terr='HK')
+        playlists = search_results['playlists']['data']
+        first = playlists[0]
+        print(first)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=first['title'])
+        context.bot.send_photo(chat_id=update.effective_chat.id,photo=first['images'][0]["url"])
+        context.bot.send_message(chat_id=update.effective_chat.id, text=first['url'])
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=res_text)
+
 
 def image_handler(bot, update):
     file = bot.message.photo[-1].file_id
     updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
     file = updater.bot.get_file(file)
     file.download()
-    print(file,type(update),type(bot))
+    print(file, type(update),type(bot))
     print(bot.message.photo[-1])
 
 
 def detect_intent_texts(project_id, session_id, text, language_code):
-    """Returns the result of detect intent with texts as inputs.
-
-    Using the same `session_id` between requests allows continuation
-    of the conversation."""
+    """检测输入返回意图名称"""
     from google.cloud import dialogflow
     session_client = dialogflow.SessionsClient()
 
@@ -82,7 +94,8 @@ def detect_intent_texts(project_id, session_id, text, language_code):
     # 返回的答案
     print('Fulfillment text: {}\n'.format(
         response.query_result.fulfillment_text))
-    return response.query_result.fulfillment_text
+    return response.query_result.intent.display_name, response.query_result.fulfillment_text
+
 
 if __name__ == '__main__':
     run()
