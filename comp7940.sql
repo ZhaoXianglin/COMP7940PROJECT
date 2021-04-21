@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主机： localhost:8889
--- 生成日期： 2021-04-21 14:22:08
+-- 生成日期： 2021-04-21 16:35:19
 -- 服务器版本： 5.7.26
 -- PHP 版本： 7.4.2
 
@@ -32,10 +32,22 @@ CREATE TABLE `sport_rec` (
   `id` int(11) NOT NULL,
   `userid` varchar(32) NOT NULL,
   `username` varchar(128) NOT NULL,
+  `addr` varchar(256) NOT NULL,
   `jing` double NOT NULL,
   `wei` double NOT NULL,
   `rectime` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户打卡记录';
+
+--
+-- 转存表中的数据 `sport_rec`
+--
+
+INSERT INTO `sport_rec` (`id`, `userid`, `username`, `addr`, `jing`, `wei`, `rectime`) VALUES
+(1, '1', '1', '1', 1, 1, '2021-04-08 15:13:41'),
+(2, '1680242189', 'oOHelloWorldOo', '香港特别行政区九龙城区歌和老街6号毕架山一号', 114.181834, 22.338364, '2021-04-21 15:14:33'),
+(3, '1583015715', 'None', '香港特别行政区九龙城区歌和老街6号毕架山一号', 114.181705, 22.33819, '2021-04-21 15:33:16'),
+(4, '1680242189', 'oOHelloWorldOo', '香港特别行政区九龙城区歌和老街6号毕架山一号', 114.181855, 22.338314, '2021-04-21 16:00:12'),
+(5, '1680242189', 'oOHelloWorldOo', '香港特别行政区九龙城区歌和老街6号毕架山一号', 114.181888, 22.338383, '2021-04-21 16:02:21');
 
 --
 -- 转储表的索引
@@ -55,7 +67,7 @@ ALTER TABLE `sport_rec`
 -- 使用表AUTO_INCREMENT `sport_rec`
 --
 ALTER TABLE `sport_rec`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
