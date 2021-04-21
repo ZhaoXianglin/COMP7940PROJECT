@@ -1,7 +1,7 @@
 #-- coding:UTF-8 --
 import configparser
 import logging
-from api import calorie
+from baidu.AipImageClassify import calorie
 from telegram.ext import Updater, MessageHandler, Filters,CommandHandler
 from telegram import (ReplyKeyboardMarkup, KeyboardButton)
 # 载入配置文件
