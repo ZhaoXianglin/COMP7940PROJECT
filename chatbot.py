@@ -39,6 +39,7 @@ def hello(bot, update):
     update.bot.send_message(chat_id=bot.effective_chat.id, text=reply_message)
 def returnlocation(bot,update):
     replay_message = "打卡成功！"
+    
     update.bot.send_message(chat_id=bot.effective_chat.id, text=replay_message)
  
     print("打卡成功！")
