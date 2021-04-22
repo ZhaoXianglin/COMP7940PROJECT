@@ -1,0 +1,12 @@
+version: '3'
+services:
+  chatbot:
+    image: comp7940_chatbot
+    depends_on:
+      - mysql
+    links:
+      - mysql
+  mysql:
+    image: comp7940_mysql
+    expose: 
+      - 3306
